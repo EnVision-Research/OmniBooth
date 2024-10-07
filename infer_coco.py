@@ -9,14 +9,11 @@ import numpy as np
 from torchvision.io import read_image
 import torch.nn.functional as F
 from torchvision import utils
-
 import torchvision.transforms.functional as tf
 
 import torch.distributed as dist
 import torch.multiprocessing as mp
 from torchvision.ops import masks_to_boxes
-
-# torch.set_default_device('cuda')
 
 from diffusers import (
     UNet2DConditionModel,
@@ -28,13 +25,7 @@ from models.controlnet1x1 import ControlNetModel1x1 as ControlNetModel
 from models.pipeline_controlnet_sd_xl import (
     StableDiffusionXLControlNetPipeline as StableDiffusionXLControlNetPipeline,
 )
-# from models.pipeline_controlnet_1x1_4dunet import (
-#     StableDiffusionControlNetPipeline1x1 as StableDiffusionControlNetPipeline,
-# )
 from models.dino_model import FrozenDinoV2Encoder
-
-# from models.unet_2d_condition_multiview import UNet2DConditionModelMultiview
-
 from args_file import parse_args
 from transformers import AutoTokenizer
 from utils.dataset_nusmtv import CocoNutImg as NuScenesDataset
@@ -60,9 +51,6 @@ except ImportError:
     print("Triton not installed, skip")
 
 args = parse_args()
-
-
-ckp_path = "./exp/out_sd21_cbgs_loss/"
 
 if args.model_path_infer is not None:
     ckp_path = args.model_path_infer
@@ -97,7 +85,6 @@ text_encoder = CLIPTextModelWithProjection.from_pretrained(
 
 val_dataset = NuScenesDataset(args, tokenizer, args.gen_train_or_val)
 
-save_path = "vis_dir/out_sd21_cbgs_loss2_40/samples"
 
 if args.save_img_path is not None:
     save_path = args.save_img_path
@@ -146,24 +133,12 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
 
     with torch.no_grad():
 
-        # for img_idx in [
-        #     0,
-        #     122,
-        #     555,
-        # ]:
-
         for img_idx in tqdm.tqdm(all_list):
             batch = val_dataset.__getitem__(img_idx)
             mtv_condition = batch["ctrl_img"]  # [None]
             validation_prompts = batch["prompts"]
-            # validation_prompts = ['A photorealistic image.' + x for x in validation_prompts]
 
             curr_h, curr_w = batch["pixel_values"].shape[-2:]
-            # import ipdb; ipdb.set_trace()
-            # print(curr_h, curr_w)
-
-            # utils.save_image(batch['patches'][0][1][0], 'output.jpg') # C H W  0~1
-
             prompt_fea = torch.zeros((*batch["ctrl_img"].shape, args.ctrl_channel)).to(
                 "cuda", dtype=weight_dtype
             )
@@ -179,7 +154,6 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
                     text_features = controlnet.text_adapter(text_features).to(
                         prompt_fea
                     )
-                # import ipdb; ipdb.set_trace()
 
                 for curr_ins_id in range(len(curr_ins_prompt)):
                     prompt_fea[curr_b][batch["ctrl_img"][curr_b] == curr_ins_id] = (
@@ -187,7 +161,7 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
                     )
 
             if 0:
-            # for curr_b, curr_ins_img in enumerate(batch["patches"]):
+                # for curr_b, curr_ins_img in enumerate(batch["patches"]):
                 curr_ins_id, curr_ins_patch = curr_ins_img[0], curr_ins_img[1].to(
                     prompt_fea
                 )
@@ -215,7 +189,6 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
                         if curr_mask.max() < 1:
                             continue
 
-                        # import ipdb; ipdb.set_trace()
                         curr_box = masks_to_boxes(curr_mask[None])[0].int().tolist()
                         height, width = (
                             curr_box[3] - curr_box[1],
@@ -236,8 +209,6 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
                             align_corners=True,
                         )[0].permute(1, 2, 0)
 
-                        # import ipdb; ipdb.set_trace()
-
                         small_mask = curr_mask[
                             curr_box[1] : curr_box[3], curr_box[0] : curr_box[2]
                         ]
@@ -247,7 +218,7 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
                         sel_ins = np.random.choice(
                             all_ins, size=(curr_pix_num // 10,), replace=True
                         )
-                        # import ipdb; ipdb.set_trace()
+
                         warp_fea[small_mask][sel_ins] = global_vector
 
                         prompt_fea[curr_b][
@@ -256,17 +227,15 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
 
             mtv_condition = prompt_fea.permute(0, 3, 1, 2)
 
-            # validation_prompts = ['show a photorealistic street view image']
             images_tensor = []
 
             for _ in range(args.num_validation_images):
                 with torch.autocast("cuda"):
-                    # import ipdb; ipdb.set_trace()
+
                     image = pipe(
                         prompt=validation_prompts,
                         image=mtv_condition,
                         num_inference_steps=30,
-                        # num_inference_steps=20,
                         generator=generator,
                         height=curr_h,
                         width=curr_w,
@@ -277,12 +246,6 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
 
                 images_tensor.append(image)
 
-            # import ipdb; ipdb.set_trace()
-
-            # raw_img = batch['pixel_values'].permute(1,2,0) * 255
-            # gen_img = torch.cat(images_tensor, 1)
-            # gen_img = torch.cat([raw_img, gen_img], 1)
-
             raw_img = (
                 batch["pixel_values"]
                 .permute(2, 0, 3, 1)
@@ -291,19 +254,16 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
             )
             gen_img = torch.cat(images_tensor, 1)
 
-            raw_w, raw_h = batch['patches'][0][4]
+            raw_w, raw_h = batch["patches"][0][4]
 
-            gen_img = tf.resize(gen_img.permute(2,0,1), (raw_h, raw_w)).permute(1,2,0)
-
-            # gen_img = torch.cat([raw_img, gen_img], 1)
+            gen_img = tf.resize(gen_img.permute(2, 0, 1), (raw_h, raw_w)).permute(
+                1, 2, 0
+            )
 
             out_path = os.path.join(
                 save_path,
-                batch['patches'][0][3],
-                # f"val_{img_idx:06d}.jpg",
+                batch["patches"][0][3],
             )
-
-            # import ipdb; ipdb.set_trace()
 
             cv2.imwrite(
                 out_path, cv2.cvtColor(gen_img.cpu().numpy(), cv2.COLOR_RGB2BGR)
@@ -315,18 +275,15 @@ if __name__ == "__main__":
 
     from torch.multiprocessing import Manager
 
-    # world_size = 8
     world_size = 4
 
     all_len = len(val_dataset)
-    # all_len = 500
 
     all_list = np.arange(0, all_len, 1)
     # all_list = np.arange(0, all_len, 8)
 
     all_len_sel = all_list.shape[0]
     val_len = all_len_sel // world_size * world_size
-    # import ipdb; ipdb.set_trace()
 
     all_list_filter = all_list[:val_len]
 
@@ -338,7 +295,6 @@ if __name__ == "__main__":
         print(len(input_datas[i]))
 
     input_datas[0] += list(all_list[val_len:])
-    # input_datas[0] += list(np.all_list(val_len, all_len_sel))
 
     global dino_encoder
 
@@ -347,16 +303,13 @@ if __name__ == "__main__":
     controlnet = ControlNetModel.from_pretrained(
         ckp_path, subfolder="controlnet", torch_dtype=torch.float16
     )
-    # unet = UNet2DConditionModel.from_pretrained(
-    #     ckp_path, subfolder="unet", torch_dtype=torch.float16
-    # )
     unet = UNet2DConditionModel.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="unet",
         revision=args.revision,
         variant=args.variant,
     )
-    vae_path = "/hpc2hdd/home/lli181/long_video/animate-anything/download/AI-ModelScope/sdxl-vae-fp16-fix"
+    vae_path = args.pretrained_vae_model_name_or_path
 
     vae = AutoencoderKL.from_pretrained(
         vae_path,
@@ -366,7 +319,11 @@ if __name__ == "__main__":
     )
 
     pipe = StableDiffusionXLControlNetPipeline.from_pretrained(
-        args.pretrained_model_name_or_path, vae=vae, unet=unet, controlnet=controlnet, torch_dtype=torch.float16
+        args.pretrained_model_name_or_path,
+        vae=vae,
+        unet=unet,
+        controlnet=controlnet,
+        torch_dtype=torch.float16,
     )
 
     # speed up diffusion process with faster scheduler and memory optimization
