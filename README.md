@@ -5,7 +5,7 @@
 
 OmniBooth is a project focused on synthesizing image data following multi-modal instruction. Users can use text or image to control instance generation. This repository provides tools and scripts to process, train, and generate synthetic image data using COCO dataset, or self-designed data.
 
-#### [Project Page](https://len-li.github.io/omnibooth-web) | [Paper](https://arxiv.org/) | [Video](https://len-li.github.io/omnibooth-web/videos/teaser-user-draw.mp4) | [Checkpoint](https://huggingface.co/lilelife/Omnibooth)
+#### [Project Page](https://len-li.github.io/omnibooth-web) | [Paper](https://arxiv.org/abs/2410.04932) | [Video](https://len-li.github.io/omnibooth-web/videos/teaser-user-draw.mp4) | [Checkpoint](https://huggingface.co/lilelife/Omnibooth)
 
 
 
