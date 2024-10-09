@@ -8,14 +8,10 @@ from PIL import Image
 from open_clip.transform import image_transform
 import sys
 
-
-
 sys.path.append("./models/dinov2")
 from models.dinov2 import hubconf
 
-
-DINOv2_weight_path = '/hpc2hdd/home/lli181/long_video/occ_exp/ctrl_instance/dinov2_vitl14_reg4_pretrain.pth'
-
+DINOv2_weight_path = './ckp/dinov2_vitl14_reg4_pretrain.pth'
 
 class FrozenDinoV2Encoder(nn.Module):
     """
