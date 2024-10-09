@@ -74,7 +74,7 @@ To train OmniBooth, follow the steps below:
     ```
 
 
-
+    Then, please download the instance prompt from [hf](https://huggingface.co/lilelife/OmniBooth/tree/main/data).
 
     After preparation, you will be able to see the following directory structure:  
 
