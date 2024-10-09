@@ -98,6 +98,8 @@ To train OmniBooth, follow the steps below:
 ## Prepare Checkpoint
 Our model is based on [stable-diffusion-xl-base-1.0](https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0). We additionaly use [sdxl-vae-fp16-fix](https://huggingface.co/madebyollin/sdxl-vae-fp16-fix) to avoid numerical issue in VAE decoding. Please download the two models and put them at `./OmniBooth/ckp/`.
 
+Download `dinov2_vitl14_reg4_pretrain.pth` for image feature extraction. [Link.](https://dl.fbaipublicfiles.com/dinov2/dinov2_vitl14/dinov2_vitl14_reg4_pretrain.pth) Also put it at `./OmniBooth/ckp/`.
+
 Our checkpoint of OmniBooth is released in [huggingface](https://huggingface.co/lilelife/OmniBooth). If you want to use our model to run inference. Please put them at `./OmniBooth/ckp/`.
 
 ## Train 
