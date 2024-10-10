@@ -1,7 +1,7 @@
 # OmniBooth
 
 > OmniBooth: Learning Latent Control for Image Synthesis with Multi-modal Instruction <br>
-> [Leheng Li](https://len-li.github.io), Weichao Qiu, Xu Yan, Jing He, Kaiqiang Zhou, Yingjie CAI, Qing LIAN, Bingbing Liu, Ying-Cong Chen
+> [Leheng Li](https://len-li.github.io), Weichao Qiu, Xu Yan, Jing He, Kaiqiang Zhou, Yingjie Cai, Qing Lian, Bingbing Liu, Ying-Cong Chen
 
 OmniBooth is a project focused on synthesizing image data following multi-modal instruction. Users can use text or image to control instance generation. This repository provides tools and scripts to process, train, and generate synthetic image data using COCO dataset, or self-designed data.
 
