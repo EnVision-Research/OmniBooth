@@ -152,8 +152,8 @@ You will find generated images at `./vis_dir/`. The image is shown as follows:
 
 ## Behavior analysis
 
-1. The text instruction is not perfect, it is applicable to descriptions of attributes like color, but it is difficult to provide more granular descriptions. Scaling the data and model can help with this problem.
-2. The image instruction may result in generated images with washed-out colors, possibly due to brightness augmentation. This can be adjusted by editing global prompt: ‘a brighter image’.
+1. The text instruction is not perfect, it is applicable to descriptions of attributes like color and texture, but similar to prior work, it is challenging to provide more granular and fine-grained descriptions. Scaling the data and model can help with this problem.
+2. The image instruction may result in generated images with washed-out colors, possibly due to brightness augmentation. This can be adjusted by editing the global prompt: ‘a brighter image’.
 3. Video Dataset. Ideally, we should use video datasets to train image-instructed generation, similar to Anydoor. However, in our multi-modal setting, the cost of obtaining video datasets + tracking annotations + panoptic annotations is relatively high, so we only trained our model on the single-view COCO dataset. If you plan to expand the training data to video datasets, please let me know.
 
 
