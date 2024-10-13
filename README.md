@@ -198,12 +198,12 @@ Additionally, we express our gratitude to the authors of the following opensourc
 ## BibTeX
 
 ```bibtex
-@inproceedings{li2024OmniBooth,
-              title={OmniBooth: Synthesize Geometric Controlled Street View Images through 3D Semantic MPIs},
-              author={Li, Leheng and Qiu, Weichao and Chen, Ying-Cong et.al.},
-              booktitle={arxiv preprint},
-              year={2024}
-            }
+@article{li2024omnibooth,
+  title={OmniBooth: Learning Latent Control for Image Synthesis with Multi-modal Instruction},
+  author={Li, Leheng and Qiu, Weichao and Yan, Xu and He, Jing and Zhou, Kaiqiang and Cai, Yingjie and Lian, Qing and Liu, Bingbing and Chen, Ying-Cong},
+  journal={arXiv preprint arXiv:2410.04932},
+  year={2024}
+}
 ```
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
