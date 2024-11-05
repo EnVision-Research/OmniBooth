@@ -102,7 +102,6 @@ def run_inference(rank, world_size, pred_results, input_datas, pipe, args):
 
     # pipe.load_ip_adapter("h94/IP-Adapter", subfolder="sdxl_models", weight_name="ip-adapter_sdxl.bin")
     # pipe.set_ip_adapter_scale(0.6)
-    # ipimage = load_image("/hpc2hdd/home/lli181/long_video/occ_exp/ctrl_instance/saia/vis_dir/ins_exp/instance_editimg/zelda.jpg")
 
     with torch.no_grad():
 
