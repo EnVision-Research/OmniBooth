@@ -37,7 +37,7 @@ To get started with OmniBooth, follow these steps:
 
 2. **Set up a environment :**
    ```bash
-   pip install torch torchvision transformers
+   pip install torch torchvision transformers open_clip_torch
    pip install diffusers==0.26.0.dev0 
    # We use a old version of diffusers, please take care of it.
 
